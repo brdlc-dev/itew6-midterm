@@ -799,7 +799,7 @@ export default function App() {
             <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#6C63FF,#9d99ff)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 18 }}>🎓</div>
             {sidebarOpen && (
               <div>
-                <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: "-0.02em" }}>CCS PROFILING SYSTEM</div>
+                <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: "-0.02em" }}>CCS PROFILING SYSTEMs</div>
                 <div style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", fontWeight: 500 }}>Student Management</div>
               </div>
             )}
