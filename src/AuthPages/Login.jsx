@@ -110,7 +110,7 @@ const Login = ({ setIsAuthenticated }) => {
             <div className="branding-icon">
               <i className="bi bi-mortarboard-fill"></i>
             </div>
-            <h1>EduProfile</h1>
+            <h1>CCS - COMPREHENSIVE PROFILING SYSTEM</h1>
             <p>Comprehensive Student Profiling System</p>
             
             <div className="branding-features">

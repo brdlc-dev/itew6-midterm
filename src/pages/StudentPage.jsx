@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { useStudents } from "../hooks/useDatabase";
+import Footer from "../components/Footer";
 import "../pages/pagesStyles/Dashboard.css";
 
 export default function StudentPage({ onLogout }) {
@@ -156,6 +157,7 @@ export default function StudentPage({ onLogout }) {
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     </div>
   );

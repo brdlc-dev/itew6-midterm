@@ -2,6 +2,7 @@ import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { useFaculty } from "../hooks/useDatabase";
+import Footer from "../components/Footer";
 import "../pages/pagesStyles/Dashboard.css";
 
 export default function FacultyPage( {onLogout} ) {
@@ -136,6 +137,7 @@ export default function FacultyPage( {onLogout} ) {
             </div>
           </div>
         </div>
+               <Footer />
       </div>
     </div>
   );

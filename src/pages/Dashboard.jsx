@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { useDashboardStats, useStudents, useFaculty, usePrograms } from "../hooks/useDatabase";
 import "../pages/pagesStyles/Dashboard.css";
 
@@ -85,7 +86,8 @@ export default function Dashboard({ onLogout }) {
       <Sidebar />
 
       <div className="dashboard-content">
-        <Navbar onLogout={onLogout} />
+        <Navbar onLogout={onLogout} />  
+       
 
         <div className="dashboard-main">
           {/* Header Section */}
@@ -232,7 +234,9 @@ export default function Dashboard({ onLogout }) {
             </div>
           </div>
         </div>
-      </div>
+        <Footer />
+      </div> 
     </div>
+    
   );
 }
