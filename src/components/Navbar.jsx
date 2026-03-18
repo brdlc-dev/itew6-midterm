@@ -6,7 +6,7 @@ export default function Navbar() {
       <div className="navbar-content">
         {/* Title Section */}
         <div className="navbar-title">
-          <h5>CCS - COMPREHENSIVE PROFILING SYSTEM haha</h5>
+          <h5>CCS - COMPREHENSIVE PROFILING SYSTEM</h5>
           <p>Student Academic Management Platform</p>
         </div>
 
