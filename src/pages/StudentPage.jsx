@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 import { useStudents } from "../hooks/useDatabase";
 import "../pages/pagesStyles/Dashboard.css";
 
-export default function StudentPage() {
+export default function StudentPage({ onLogout }) {
   const { students, loading, error } = useStudents();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
@@ -35,7 +35,7 @@ export default function StudentPage() {
       <div className="dashboard-container">
         <Sidebar />
         <div className="dashboard-content">
-          <Navbar />
+          <Navbar onLogout={ onLogout }/>
           <div className="dashboard-main" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <p style={{ fontSize: '1.2rem', color: '#ff6b35' }}>Error loading students</p>
           </div>
@@ -49,7 +49,7 @@ export default function StudentPage() {
       <Sidebar />
 
       <div className="dashboard-content">
-        <Navbar />
+        <Navbar onLogout={onLogout}/>
 
         <div className="dashboard-main">
           {/* Header */}

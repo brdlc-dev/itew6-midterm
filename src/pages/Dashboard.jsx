@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import { useDashboardStats, useStudents, useFaculty, usePrograms } from "../hooks/useDatabase";
 import "../pages/pagesStyles/Dashboard.css";
 
-export default function Dashboard() {
+export default function Dashboard({ onLogout }) {
   const { stats, loading: statsLoading } = useDashboardStats();
   const { students, loading: studentsLoading } = useStudents();
   const { faculty, loading: facultyLoading } = useFaculty();
@@ -71,7 +71,7 @@ export default function Dashboard() {
       <div className="dashboard-container">
         <Sidebar />
         <div className="dashboard-content">
-          <Navbar />
+          <Navbar onLogout={onLogout} />
           <div className="dashboard-main" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <p style={{ fontSize: '1.2rem', color: '#ff6b35' }}>Loading dashboard...</p>
           </div>
@@ -85,7 +85,7 @@ export default function Dashboard() {
       <Sidebar />
 
       <div className="dashboard-content">
-        <Navbar />
+        <Navbar onLogout={onLogout} />
 
         <div className="dashboard-main">
           {/* Header Section */}

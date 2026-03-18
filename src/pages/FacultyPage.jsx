@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import { useFaculty } from "../hooks/useDatabase";
 import "../pages/pagesStyles/Dashboard.css";
 
-export default function FacultyPage() {
+export default function FacultyPage( {onLogout} ) {
   const { faculty, loading, error } = useFaculty();
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -17,7 +17,7 @@ export default function FacultyPage() {
       <div className="dashboard-container">
         <Sidebar />
         <div className="dashboard-content">
-          <Navbar />
+          <Navbar onLogout= {onLogout} />
           <div className="dashboard-main" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <p style={{ fontSize: '1.2rem', color: '#ff6b35' }}>Loading faculty...</p>
           </div>
@@ -31,7 +31,7 @@ export default function FacultyPage() {
       <div className="dashboard-container">
         <Sidebar />
         <div className="dashboard-content">
-          <Navbar />
+          <Navbar onLogout={onLogout}/>
           <div className="dashboard-main" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <p style={{ fontSize: '1.2rem', color: '#ff6b35' }}>Error loading faculty</p>
           </div>
@@ -45,7 +45,7 @@ export default function FacultyPage() {
       <Sidebar />
 
       <div className="dashboard-content">
-        <Navbar />
+        <Navbar onLogout={onLogout} />
 
         <div className="dashboard-main">
           {/* Header */}
