@@ -14,3 +14,417 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+ALSO OUR MYSQL SCHEMA 
+-- CCS Comprehensive Student Profiling System
+-- MySQL Database Schema
+-- Created for College of Computing Sciences
+
+-- =====================================================
+-- ENTITY TABLE (Core Person Information)
+-- =====================================================
+CREATE TABLE entity (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  firstName VARCHAR(100) NOT NULL,
+  lastName VARCHAR(100) NOT NULL,
+  middleName VARCHAR(100),
+  age INT,
+  birthDate DATE,
+  birthProvince VARCHAR(100),
+  subdivision VARCHAR(100),
+  street VARCHAR(100),
+  barangay VARCHAR(100),
+  city VARCHAR(100),
+  province VARCHAR(100),
+  postalCode VARCHAR(20),
+  mobileNumber VARCHAR(20),
+  email VARCHAR(100) UNIQUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- =====================================================
+-- COLLEGE TABLE
+-- =====================================================
+CREATE TABLE college (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(150) NOT NULL UNIQUE,
+  dean VARCHAR(100),
+  dateEstablished DATE,
+  isActive BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- =====================================================
+-- PROGRAM TABLE
+-- =====================================================
+CREATE TABLE program (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  collegeId INT NOT NULL,
+  name VARCHAR(150) NOT NULL,
+  type VARCHAR(50), -- Bachelor's, Master's, Diploma, etc.
+  dateEstablished DATE,
+  isActive BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (collegeId) REFERENCES college(id) ON DELETE CASCADE
+);
+
+-- =====================================================
+-- CURRICULUM TABLE
+-- =====================================================
+CREATE TABLE curriculum (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  programId INT NOT NULL,
+  yearLevel INT NOT NULL, -- 1st, 2nd, 3rd, 4th year
+  implementationStart DATE,
+  implementationEnd DATE,
+  type VARCHAR(50),
+  award VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (programId) REFERENCES program(id) ON DELETE CASCADE,
+  UNIQUE KEY unique_program_year (programId, yearLevel)
+);
+
+-- =====================================================
+-- COURSES TABLE
+-- =====================================================
+CREATE TABLE courses (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  curriculumId INT NOT NULL,
+  courseCode VARCHAR(20) NOT NULL UNIQUE,
+  courseName VARCHAR(150) NOT NULL,
+  credits INT,
+  withLaboratory BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (curriculumId) REFERENCES curriculum(id) ON DELETE CASCADE
+);
+
+-- =====================================================
+-- SECTION TABLE (Class Sections)
+-- =====================================================
+CREATE TABLE section (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  programId INT NOT NULL,
+  sectionName VARCHAR(50) NOT NULL, -- e.g., BSCS-1A
+  startYear INT,
+  endYear INT,
+  yearLevel INT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (programId) REFERENCES program(id) ON DELETE CASCADE,
+  UNIQUE KEY unique_section (programId, sectionName)
+);
+
+-- =====================================================
+-- SCHEDULE TABLE (Class Schedules)
+-- =====================================================
+CREATE TABLE schedule (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  sectionId INT NOT NULL,
+  courseId INT,
+  courseName VARCHAR(150),
+  timeStart TIME,
+  timeEnd TIME,
+  room VARCHAR(50),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (sectionId) REFERENCES section(id) ON DELETE CASCADE
+);
+
+-- =====================================================
+-- STUDENT TABLE
+-- =====================================================
+CREATE TABLE student (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  entityId INT NOT NULL UNIQUE,
+  studentId VARCHAR(20) NOT NULL UNIQUE,
+  programId INT NOT NULL,
+  yearLevel INT,
+  unitsTaken INT,
+  unitsLeft INT,
+  dateEnrolled DATE,
+  dateGraduated DATE,
+  dateDropped DATE,
+  gpa DECIMAL(3, 2),
+  status ENUM('Active', 'Graduated', 'Dropped', 'Suspended') DEFAULT 'Active',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (entityId) REFERENCES entity(id) ON DELETE CASCADE,
+  FOREIGN KEY (programId) REFERENCES program(id),
+  INDEX idx_student_id (studentId),
+  INDEX idx_program_id (programId),
+  INDEX idx_status (status)
+);
+
+-- =====================================================
+-- STUDENT_PROGRAM TABLE (Track Student in Programs)
+-- =====================================================
+CREATE TABLE student_program (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  studentId INT NOT NULL,
+  programId INT NOT NULL,
+  dateEnrolled DATE,
+  dateGraduated DATE,
+  dateDropped DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (studentId) REFERENCES student(id) ON DELETE CASCADE,
+  FOREIGN KEY (programId) REFERENCES program(id),
+  UNIQUE KEY unique_student_program (studentId, programId)
+);
+
+-- =====================================================
+-- STUDENT_SECTION TABLE (Student Enrollment in Sections)
+-- =====================================================
+CREATE TABLE student_section (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  studentId INT NOT NULL,
+  sectionId INT NOT NULL,
+  dateEnrolled DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (studentId) REFERENCES student(id) ON DELETE CASCADE,
+  FOREIGN KEY (sectionId) REFERENCES section(id) ON DELETE CASCADE,
+  UNIQUE KEY unique_student_section (studentId, sectionId)
+);
+
+-- =====================================================
+-- EDUCATIONAL_BACKGROUND TABLE
+-- =====================================================
+CREATE TABLE educational_background (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  studentId INT NOT NULL,
+  facultyId INT,
+  schoolUniversity VARCHAR(150),
+  startYear INT,
+  graduateYear INT,
+  type VARCHAR(50), -- Elementary, High School, College, etc.
+  award VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (studentId) REFERENCES student(id) ON DELETE CASCADE
+);
+
+-- =====================================================
+-- EXTRA_CURRICULAR TABLE (Student Activities)
+-- =====================================================
+CREATE TABLE extra_curricular (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  studentId INT NOT NULL,
+  activity VARCHAR(150),
+  role VARCHAR(100),
+  organization VARCHAR(150),
+  startDate DATE,
+  endDate DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (studentId) REFERENCES student(id) ON DELETE CASCADE
+);
+
+-- =====================================================
+-- AWARDS TABLE (Student Awards & Recognition)
+-- =====================================================
+CREATE TABLE awards (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  entityId INT NOT NULL,
+  title VARCHAR(200) NOT NULL,
+  awardingDate DATE,
+  awardingOrganization VARCHAR(150),
+  awardingLocation VARCHAR(150),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (entityId) REFERENCES entity(id) ON DELETE CASCADE
+);
+
+-- =====================================================
+-- FACULTY TABLE
+-- =====================================================
+CREATE TABLE faculty (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  entityId INT NOT NULL UNIQUE,
+  position VARCHAR(100),
+  employmentDate DATE,
+  employmentType VARCHAR(50), -- Full-time, Part-time, Contract, etc.
+  monthlyIncome DECIMAL(10, 2),
+  department VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (entityId) REFERENCES entity(id) ON DELETE CASCADE,
+  INDEX idx_department (department)
+);
+
+-- =====================================================
+-- JOB_HISTORY TABLE (Faculty Employment History)
+-- =====================================================
+CREATE TABLE job_history (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  facultyId INT NOT NULL,
+  position VARCHAR(100),
+  employmentDate DATE,
+  employmentEndDate DATE,
+  employmentType VARCHAR(50),
+  company VARCHAR(150),
+  workLocation VARCHAR(150),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (facultyId) REFERENCES faculty(id) ON DELETE CASCADE
+);
+
+-- =====================================================
+-- ORGANIZATION TABLE (Student Organizations)
+-- =====================================================
+CREATE TABLE organization (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  collegeId INT,
+  organizationName VARCHAR(150) NOT NULL UNIQUE,
+  organizationDescription TEXT,
+  dateCreated DATE,
+  isActive BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (collegeId) REFERENCES college(id)
+);
+
+-- =====================================================
+-- STUDENT_ORGANIZATION TABLE (Student Membership in Organizations)
+-- =====================================================
+CREATE TABLE student_organization (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  studentId INT NOT NULL,
+  organizationId INT NOT NULL,
+  role VARCHAR(100), -- President, Vice President, Member, etc.
+  dateJoined DATE,
+  dateLeft DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (studentId) REFERENCES student(id) ON DELETE CASCADE,
+  FOREIGN KEY (organizationId) REFERENCES organization(id) ON DELETE CASCADE,
+  UNIQUE KEY unique_student_org (studentId, organizationId)
+);
+
+-- =====================================================
+-- ADVISOR_ORGANIZATION TABLE (Faculty Advisory Roles)
+-- =====================================================
+CREATE TABLE advisor_organization (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  facultyId INT NOT NULL,
+  organizationId INT NOT NULL,
+  dateJoined DATE,
+  dateLeft DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (facultyId) REFERENCES faculty(id) ON DELETE CASCADE,
+  FOREIGN KEY (organizationId) REFERENCES organization(id) ON DELETE CASCADE
+);
+
+-- =====================================================
+-- ORGANIZATION_HISTORY TABLE
+-- =====================================================
+CREATE TABLE organization_history (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  organizationId INT NOT NULL,
+  type VARCHAR(50),
+  description TEXT,
+  dateCreated DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (organizationId) REFERENCES organization(id) ON DELETE CASCADE
+);
+
+-- =====================================================
+-- CREATE INDEXES FOR PERFORMANCE
+-- =====================================================
+CREATE INDEX idx_student_email ON entity(email);
+CREATE INDEX idx_student_program ON student(programId);
+CREATE INDEX idx_curriculum_program ON curriculum(programId);
+CREATE INDEX idx_courses_curriculum ON courses(curriculumId);
+CREATE INDEX idx_section_program ON section(programId);
+CREATE INDEX idx_student_section_student ON student_section(studentId);
+CREATE INDEX idx_student_section_section ON student_section(sectionId);
+CREATE INDEX idx_extra_curricular_student ON extra_curricular(studentId);
+CREATE INDEX idx_awards_entity ON awards(entityId);
+CREATE INDEX idx_faculty_department ON faculty(department);
+CREATE INDEX idx_job_history_faculty ON job_history(facultyId);
+CREATE INDEX idx_student_org_student ON student_organization(studentId);
+CREATE INDEX idx_student_org_organization ON student_organization(organizationId);
+CREATE INDEX idx_advisor_org_faculty ON advisor_organization(facultyId);
+CREATE INDEX idx_advisor_org_organization ON advisor_organization(organizationId);
+
+-- =====================================================
+-- SAMPLE DATA (Optional - For Testing)
+-- =====================================================
+
+-- Insert Sample College
+INSERT INTO college (name, dean, dateEstablished, isActive) VALUES
+('College of Computing Sciences', 'Dr. Maria Santos', '2010-01-15', TRUE);
+
+-- Insert Sample Programs
+INSERT INTO program (collegeId, name, type, dateEstablished, isActive) VALUES
+(1, 'BS Computer Science', 'Bachelor\'s Degree', '2010-01-15', TRUE),
+(1, 'BS Information Technology', 'Bachelor\'s Degree', '2012-06-01', TRUE),
+(1, 'BS Information Systems', 'Bachelor\'s Degree', '2015-08-01', TRUE);
+
+-- Insert Sample Entity (Person)
+INSERT INTO entity (firstName, lastName, middleName, age, birthDate, city, province, mobileNumber, email) VALUES
+('John', 'Doe', 'Michael', 20, '2003-05-15', 'Dasmarinas', 'Cavite', '09123456789', 'john.doe@ccs.edu'),
+('Jane', 'Smith', 'Anne', 19, '2004-08-20', 'Binan', 'Laguna', '09234567890', 'jane.smith@ccs.edu'),
+('Dr.', 'Rodriguez', '', 45, '1978-12-10', 'Kawit', 'Cavite', '09111111111', 'dr.rodriguez@ccs.edu');
+
+-- Insert Sample Students
+INSERT INTO student (entityId, studentId, programId, yearLevel, unitsTaken, unitsLeft, dateEnrolled, gpa, status) VALUES
+(1, 'CSC-2024-001', 1, 3, 45, 15, '2022-06-01', 3.85, 'Active'),
+(2, 'CSC-2024-002', 2, 2, 30, 30, '2023-06-01', 3.92, 'Active');
+
+-- Insert Sample Faculty
+INSERT INTO faculty (entityId, position, employmentDate, employmentType, monthlyIncome, department) VALUES
+(3, 'Professor', '2015-08-01', 'Full-time', 65000.00, 'Computer Science');
+
+-- View to get student full information
+CREATE VIEW student_full_info AS
+SELECT 
+    s.id,
+    s.studentId,
+    CONCAT(e.firstName, ' ', e.lastName) as fullName,
+    e.firstName,
+    e.lastName,
+    e.email,
+    e.mobileNumber,
+    e.birthDate,
+    e.age,
+    e.city,
+    e.province,
+    p.name as programName,
+    s.yearLevel,
+    s.gpa,
+    s.status,
+    s.dateEnrolled,
+    s.dateGraduated,
+    s.dateDropped
+FROM student s
+JOIN entity e ON s.entityId = e.id
+JOIN program p ON s.programId = p.id;
+
+-- View to get faculty full information
+CREATE VIEW faculty_full_info AS
+SELECT 
+    f.id,
+    CONCAT(e.firstName, ' ', e.lastName) as fullName,
+    e.firstName,
+    e.lastName,
+    e.email,
+    e.mobileNumber,
+    f.position,
+    f.department,
+    f.employmentType,
+    f.monthlyIncome,
+    f.employmentDate
+FROM faculty f
+JOIN entity e ON f.entityId = e.id;
+
+-- =====================================================
+-- END OF SCHEMA
+-- =====================================================
