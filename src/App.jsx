@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { useState, useEffect } from "react";
 
 // Pages
@@ -59,12 +64,22 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
+        {/* Public Routes - Login is default */}
         <Route
           path="/"
           element={
             isAuthenticated ? (
-              <Navigate to="/" replace />
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Login setIsAuthenticated={setIsAuthenticated} />
+            )
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
             ) : (
               <Login setIsAuthenticated={setIsAuthenticated} />
             )
@@ -74,7 +89,7 @@ export default function App() {
           path="/register"
           element={
             isAuthenticated ? (
-              <Navigate to="/" replace />
+              <Navigate to="/dashboard" replace />
             ) : (
               <Register />
             )
@@ -107,11 +122,11 @@ export default function App() {
           }
         />
 
-        {/* Catch all - redirect to home or login */}
+        {/* Catch all - redirect to login or dashboard based on auth */}
         <Route
           path="*"
           element={
-            <Navigate to={isAuthenticated ? "/" : "/login"} replace />
+            <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
           }
         />
       </Routes>

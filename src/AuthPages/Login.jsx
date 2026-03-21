@@ -1,54 +1,54 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import './AuthPages.css/Login.css'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./AuthPages.css/Login.css";
 
 const Login = ({ setIsAuthenticated }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  })
-  const [errors, setErrors] = useState({})
-  const [successMessage, setSuccessMessage] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value
-    }))
+      [name]: value,
+    }));
     // Clear error for this field
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
-        [name]: ''
-      }))
+        [name]: "",
+      }));
     }
-  }
+  };
 
   const validateEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  }
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    const newErrors = {}
+    e.preventDefault();
+    const newErrors = {};
 
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
+      newErrors.email = "Email is required";
     } else if (!validateEmail(formData.email)) {
-      newErrors.email = 'Invalid email format'
+      newErrors.email = "Invalid email format";
     }
 
     if (!formData.password.trim()) {
-      newErrors.password = 'Password is required'
+      newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
+      newErrors.password = "Password must be at least 6 characters";
     }
 
     if (Object.keys(newErrors).length === 0) {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
         // TODO: Replace with actual API call
         // Example:
@@ -64,42 +64,44 @@ const Login = ({ setIsAuthenticated }) => {
         // }
 
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
         // Create fake token for demo (replace with real token from API)
-        const fakeToken = btoa(JSON.stringify({ 
-          email: formData.email, 
-          timestamp: Date.now(),
-          role: 'administrator'
-        }))
-        
+        const fakeToken = btoa(
+          JSON.stringify({
+            email: formData.email,
+            timestamp: Date.now(),
+            role: "administrator",
+          }),
+        );
+
         // Store token in localStorage
-        localStorage.setItem('authToken', fakeToken)
-        
+        localStorage.setItem("authToken", fakeToken);
+
         // Store user info (optional)
-        localStorage.setItem('userEmail', formData.email)
-        
-        setSuccessMessage('✓ Login successful! Redirecting to dashboard...')
-        setFormData({ email: '', password: '' })
-        
+        localStorage.setItem("userEmail", formData.email);
+
+        setSuccessMessage("✓ Login successful! Redirecting to dashboard...");
+        setFormData({ email: "", password: "" });
+
         // Update authentication state in parent App component
         if (setIsAuthenticated) {
-          setIsAuthenticated(true)
+          setIsAuthenticated(true);
         }
-        
+
         // Redirect to dashboard after success
         setTimeout(() => {
-          navigate('/')
-        }, 1500)
+          navigate("/dashboard");
+        }, 1500);
       } catch (error) {
-        setErrors({ general: 'Login failed. Please try again.' })
+        setErrors({ general: "Login failed. Please try again." });
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     } else {
-      setErrors(newErrors)
+      setErrors(newErrors);
     }
-  }
+  };
 
   return (
     <div className="login-container">
@@ -112,7 +114,7 @@ const Login = ({ setIsAuthenticated }) => {
             </div>
             <h1>CCS - COMPREHENSIVE PROFILING SYSTEM</h1>
             <p>Comprehensive Student Profiling System</p>
-            
+
             <div className="branding-features">
               <div className="feature">
                 <i className="bi bi-check-circle-fill"></i>
@@ -138,9 +140,7 @@ const Login = ({ setIsAuthenticated }) => {
         <div className="login-form-section">
           {/* Success Message */}
           {successMessage && (
-            <div className="success-message">
-              {successMessage}
-            </div>
+            <div className="success-message">{successMessage}</div>
           )}
 
           {/* Error Message */}
@@ -169,7 +169,7 @@ const Login = ({ setIsAuthenticated }) => {
                   value={formData.email}
                   onChange={handleInputChange}
                   disabled={isLoading}
-                  className={errors.email ? 'input-error' : ''}
+                  className={errors.email ? "input-error" : ""}
                   autoComplete="email"
                 />
               </div>
@@ -193,7 +193,7 @@ const Login = ({ setIsAuthenticated }) => {
                   value={formData.password}
                   onChange={handleInputChange}
                   disabled={isLoading}
-                  className={errors.password ? 'input-error' : ''}
+                  className={errors.password ? "input-error" : ""}
                   autoComplete="current-password"
                 />
               </div>
@@ -210,14 +210,12 @@ const Login = ({ setIsAuthenticated }) => {
                 <input type="checkbox" defaultChecked />
                 <span>Remember me</span>
               </label>
-              <a href="#" className="forgot-password">Forgot password?</a>
+              <a href="#" className="forgot-password">
+                Forgot password?
+              </a>
             </div>
 
-            <button 
-              type="submit" 
-              className="submit-btn"
-              disabled={isLoading}
-            >
+            <button type="submit" className="submit-btn" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <span className="spinner"></span>
@@ -232,7 +230,7 @@ const Login = ({ setIsAuthenticated }) => {
             </button>
 
             <p className="form-footer">
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <a href="/register" className="link-btn">
                 Register here
               </a>
@@ -246,7 +244,7 @@ const Login = ({ setIsAuthenticated }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
