@@ -5,12 +5,14 @@ import { useFaculty } from "../hooks/useDatabase";
 import Footer from "../components/Footer";
 import "../pages/pagesStyles/Dashboard.css";
 
-export default function FacultyPage( {onLogout} ) {
+export default function FacultyPage({ onLogout }) {
   const { faculty, loading, error } = useFaculty();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredFaculty = faculty.filter(fac => {
-    return `${fac.firstName} ${fac.lastName}`.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredFaculty = faculty.filter((fac) => {
+    return `${fac.firstName} ${fac.lastName}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
   });
 
   if (loading) {
@@ -18,9 +20,18 @@ export default function FacultyPage( {onLogout} ) {
       <div className="dashboard-container">
         <Sidebar />
         <div className="dashboard-content">
-          <Navbar onLogout= {onLogout} />
-          <div className="dashboard-main" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <p style={{ fontSize: '1.2rem', color: '#ff6b35' }}>Loading faculty...</p>
+          <Navbar onLogout={onLogout} />
+          <div
+            className="dashboard-main"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <p style={{ fontSize: "1.2rem", color: "#ff6b35" }}>
+              Loading faculty...
+            </p>
           </div>
         </div>
       </div>
@@ -32,9 +43,18 @@ export default function FacultyPage( {onLogout} ) {
       <div className="dashboard-container">
         <Sidebar />
         <div className="dashboard-content">
-          <Navbar onLogout={onLogout}/>
-          <div className="dashboard-main" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <p style={{ fontSize: '1.2rem', color: '#ff6b35' }}>Error loading faculty</p>
+          <Navbar onLogout={onLogout} />
+          <div
+            className="dashboard-main"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <p style={{ fontSize: "1.2rem", color: "#ff6b35" }}>
+              Error loading faculty
+            </p>
           </div>
         </div>
       </div>
@@ -56,8 +76,16 @@ export default function FacultyPage( {onLogout} ) {
           </div>
 
           {/* Search */}
-          <div className="quick-actions" style={{ marginBottom: '2rem' }}>
-            <label style={{ color: '#666', fontSize: '0.9rem', fontWeight: '600', display: 'block', marginBottom: '0.5rem' }}>
+          <div className="quick-actions" style={{ marginBottom: "2rem" }}>
+            <label
+              style={{
+                color: "#666",
+                fontSize: "0.9rem",
+                fontWeight: "600",
+                display: "block",
+                marginBottom: "0.5rem",
+              }}
+            >
               Search Faculty
             </label>
             <input
@@ -66,12 +94,12 @@ export default function FacultyPage( {onLogout} ) {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
-                width: '100%',
-                maxWidth: '400px',
-                padding: '0.7rem',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                fontSize: '0.9rem'
+                width: "100%",
+                maxWidth: "400px",
+                padding: "0.7rem",
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                fontSize: "0.9rem",
               }}
             />
           </div>
@@ -96,17 +124,32 @@ export default function FacultyPage( {onLogout} ) {
                 <tbody>
                   {filteredFaculty.map((fac, idx) => (
                     <tr key={idx}>
-                      <td className="dept-cell-dept">{fac.firstName} {fac.lastName}</td>
-                      <td className="dept-cell-data">{fac.position || 'N/A'}</td>
-                      <td className="dept-cell-data">{fac.department || 'N/A'}</td>
-                      <td className="dept-cell-data">{fac.email || 'N/A'}</td>
-                      <td className="dept-cell-data">{fac.mobileNumber || 'N/A'}</td>
-                      <td className="dept-cell-data">{fac.employmentType || 'N/A'}</td>
-                      <td className="dept-cell-data" style={{ fontWeight: '600', color: '#ff6b35' }}>
-                        ₱{fac.monthlyIncome || '0'}
+                      <td className="dept-cell-dept">
+                        {fac.firstName} {fac.lastName}
                       </td>
                       <td className="dept-cell-data">
-                        {fac.employmentDate ? new Date(fac.employmentDate).toLocaleDateString() : 'N/A'}
+                        {fac.position || "N/A"}
+                      </td>
+                      <td className="dept-cell-data">
+                        {fac.department || "N/A"}
+                      </td>
+                      <td className="dept-cell-data">{fac.email || "N/A"}</td>
+                      <td className="dept-cell-data">
+                        {fac.mobileNumber || "N/A"}
+                      </td>
+                      <td className="dept-cell-data">
+                        {fac.employmentType || "N/A"}
+                      </td>
+                      <td
+                        className="dept-cell-data"
+                        style={{ fontWeight: "600", color: "#ff6b35" }}
+                      >
+                        ₱{fac.monthlyIncome || "0"}
+                      </td>
+                      <td className="dept-cell-data">
+                        {fac.employmentDate
+                          ? new Date(fac.employmentDate).toLocaleDateString()
+                          : "N/A"}
                       </td>
                     </tr>
                   ))}
@@ -116,7 +159,7 @@ export default function FacultyPage( {onLogout} ) {
           </div>
 
           {/* Faculty Statistics */}
-          <div className="stats-row" style={{ marginTop: '2rem' }}>
+          <div className="stats-row" style={{ marginTop: "2rem" }}>
             <div className="stat-card">
               <div className="stat-card-backdrop stat-card-backdrop-orange-1"></div>
               <div className="stat-card-content">
@@ -130,14 +173,22 @@ export default function FacultyPage( {onLogout} ) {
               <div className="stat-card-content">
                 <h6 className="stat-card-label">Average Monthly Income</h6>
                 <h2 className="stat-card-value">
-                  ₱{faculty.length > 0 ? Math.round(faculty.reduce((sum, f) => sum + (f.monthlyIncome || 0), 0) / faculty.length) : 0}
+                  ₱
+                  {faculty.length > 0
+                    ? Math.round(
+                        faculty.reduce(
+                          (sum, f) => sum + (f.monthlyIncome || 0),
+                          0,
+                        ) / faculty.length,
+                      )
+                    : 0}
                 </h2>
                 <p className="stat-card-trend">Per faculty member</p>
               </div>
             </div>
           </div>
         </div>
-               <Footer />
+        <Footer />
       </div>
     </div>
   );

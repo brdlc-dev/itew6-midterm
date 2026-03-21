@@ -61,7 +61,7 @@ export default function App() {
       <Routes>
         {/* Public Routes */}
         <Route
-          path="/login"
+          path="/"
           element={
             isAuthenticated ? (
               <Navigate to="/" replace />
@@ -83,7 +83,7 @@ export default function App() {
 
         {/* Protected Routes */}
         <Route
-          path="/"
+          path="/dashboard"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <DashboardPage onLogout={handleLogout} />

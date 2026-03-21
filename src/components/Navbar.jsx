@@ -9,12 +9,12 @@ export default function Navbar({ onLogout }) {
   const handleLogout = () => {
     // Clear authentication
     localStorage.removeItem("authToken");
-    
+
     // Call parent logout handler
     if (onLogout) {
       onLogout();
     }
-    
+
     // Redirect to login
     navigate("/login");
   };
@@ -32,10 +32,7 @@ export default function Navbar({ onLogout }) {
         <div className="navbar-right">
           {/* Search Bar */}
           <div className="navbar-search d-none d-md-flex">
-            <input
-              type="text"
-              placeholder="Search..."
-            />
+            <input type="text" placeholder="Search..." />
           </div>
 
           {/* Icon Buttons */}
@@ -57,7 +54,7 @@ export default function Navbar({ onLogout }) {
               <p className="navbar-profile-name">Admin</p>
               <p className="navbar-profile-role">Administrator</p>
             </div>
-            
+
             {/* Profile Avatar with Dropdown */}
             <div className="navbar-profile-dropdown">
               <button

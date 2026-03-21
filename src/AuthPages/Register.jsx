@@ -22,7 +22,6 @@ const Register = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }))
-    // Clear error for this field
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -72,7 +71,6 @@ const Register = () => {
     if (Object.keys(newErrors).length === 0) {
       setIsLoading(true)
       try {
-        // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1500))
         
         setSuccessMessage('✓ Registration successful! Redirecting to login...')
@@ -85,7 +83,6 @@ const Register = () => {
           agreeTerms: false
         })
         
-        // Redirect to login after success
         setTimeout(() => {
           navigate('/login')
         }, 1500)
@@ -108,7 +105,7 @@ const Register = () => {
             <div className="branding-icon">
               <i className="bi bi-mortarboard-fill"></i>
             </div>
-            <h1>CCS - COMPREHENSIVE PROFILING SYSTEM</h1>
+            <h1>CCS</h1>
             <p>Comprehensive Student Profiling System</p>
             
             <div className="branding-features">
@@ -206,14 +203,14 @@ const Register = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="email">Email Address</label>
+              <label htmlFor="email">Email</label>
               <div className="form-input-wrapper">
                 <i className="bi bi-envelope-fill"></i>
                 <input
                   id="email"
                   type="email"
                   name="email"
-                  placeholder="Enter your email"
+                  placeholder="you@email.com"
                   value={formData.email}
                   onChange={handleInputChange}
                   disabled={isLoading}
@@ -229,53 +226,54 @@ const Register = () => {
               )}
             </div>
 
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <div className="form-input-wrapper">
-                <i className="bi bi-lock-fill"></i>
-                <input
-                  id="password"
-                  type="password"
-                  name="password"
-                  placeholder="Create a password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                  className={errors.password ? 'input-error' : ''}
-                  autoComplete="new-password"
-                />
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <div className="form-input-wrapper">
+                  <i className="bi bi-lock-fill"></i>
+                  <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    placeholder="6+ characters"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                    className={errors.password ? 'input-error' : ''}
+                    autoComplete="new-password"
+                  />
+                </div>
+                {errors.password && (
+                  <span className="error-message">
+                    <i className="bi bi-exclamation-circle-fill"></i>
+                    {errors.password}
+                  </span>
+                )}
               </div>
-              {errors.password && (
-                <span className="error-message">
-                  <i className="bi bi-exclamation-circle-fill"></i>
-                  {errors.password}
-                </span>
-              )}
-              <p className="password-hint">Must be at least 6 characters</p>
-            </div>
 
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <div className="form-input-wrapper">
-                <i className="bi bi-lock-fill"></i>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Confirm your password"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  disabled={isLoading}
-                  className={errors.confirmPassword ? 'input-error' : ''}
-                  autoComplete="new-password"
-                />
+              <div className="form-group">
+                <label htmlFor="confirmPassword">Confirm</label>
+                <div className="form-input-wrapper">
+                  <i className="bi bi-lock-fill"></i>
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Confirm password"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    disabled={isLoading}
+                    className={errors.confirmPassword ? 'input-error' : ''}
+                    autoComplete="new-password"
+                  />
+                </div>
+                {errors.confirmPassword && (
+                  <span className="error-message">
+                    <i className="bi bi-exclamation-circle-fill"></i>
+                    {errors.confirmPassword}
+                  </span>
+                )}
               </div>
-              {errors.confirmPassword && (
-                <span className="error-message">
-                  <i className="bi bi-exclamation-circle-fill"></i>
-                  {errors.confirmPassword}
-                </span>
-              )}
             </div>
 
             <label className="terms-agreement">
@@ -286,10 +284,10 @@ const Register = () => {
                 onChange={handleInputChange}
                 disabled={isLoading}
               />
-              <span>I agree to the Terms of Service and Privacy Policy</span>
+              <span>I agree to Terms of Service and Privacy Policy</span>
             </label>
             {errors.agreeTerms && (
-              <span className="error-message" style={{ marginBottom: '20px' }}>
+              <span className="error-message">
                 <i className="bi bi-exclamation-circle-fill"></i>
                 {errors.agreeTerms}
               </span>
@@ -315,15 +313,14 @@ const Register = () => {
 
             <p className="form-footer">
               Already have an account?{' '}
-              <a href="/login" className="link-btn">
+              <a href="/" className="link-btn">
                 Sign in here
               </a>
             </p>
           </form>
 
-          {/* Footer Links */}
           <div className="register-footer">
-            <p>© 2024 EduProfile. All rights reserved.</p>
+            <p>© 2024 CCS. All rights reserved.</p>
           </div>
         </div>
       </div>
