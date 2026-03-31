@@ -2,7 +2,12 @@ import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { useDashboardStats, useStudents, useFaculty, usePrograms } from "../hooks/useDatabase";
+import {
+  useDashboardStats,
+  useStudents,
+  useFaculty,
+  usePrograms,
+} from "../hooks/useDatabase";
 import "../pages/pagesStyles/Dashboard.css";
 
 export default function Dashboard({ onLogout }) {
@@ -15,17 +20,21 @@ export default function Dashboard({ onLogout }) {
   const [metrics, setMetrics] = useState({
     avgGPA: 0,
     activeStudents: 0,
-    totalCourses: 0
+    totalCourses: 0,
   });
 
   useEffect(() => {
     if (students.length > 0) {
-      const avgGPA = (students.reduce((sum, s) => sum + (s.gpa || 0), 0) / students.length).toFixed(2);
-      const activeStudents = students.filter(s => s.status === 'Active').length;
+      const avgGPA = (
+        students.reduce((sum, s) => sum + (s.gpa || 0), 0) / students.length
+      ).toFixed(2);
+      const activeStudents = students.filter(
+        (s) => s.status === "Active",
+      ).length;
       setMetrics({
         avgGPA,
         activeStudents,
-        totalCourses: stats.totalCourses
+        totalCourses: stats.totalCourses,
       });
     }
   }, [students, stats]);
@@ -38,7 +47,7 @@ export default function Dashboard({ onLogout }) {
       icon: "bi-people-fill",
       backdropClass: "stat-card-backdrop-orange-1",
       iconClass: "stat-card-orange-1",
-      trend: `${metrics.activeStudents} active students`
+      trend: `${metrics.activeStudents} active students`,
     },
     {
       id: 2,
@@ -47,7 +56,7 @@ export default function Dashboard({ onLogout }) {
       icon: "bi-person-badge-fill",
       backdropClass: "stat-card-backdrop-orange-2",
       iconClass: "stat-card-orange-2",
-      trend: `${stats.totalPrograms} programs`
+      trend: `${stats.totalPrograms} programs`,
     },
     {
       id: 3,
@@ -56,15 +65,23 @@ export default function Dashboard({ onLogout }) {
       icon: "bi-book-fill",
       backdropClass: "stat-card-backdrop-orange-3",
       iconClass: "stat-card-orange-3",
-      trend: `${stats.totalCourses} courses`
-    }
+      trend: `${stats.totalCourses} courses`,
+    },
   ];
 
   const actions = [
     { icon: "bi-bar-chart-fill", label: "View Reports", color: "#ff8c42" },
     { icon: "bi-people-fill", label: "Manage Students", color: "#ff9f43" },
-    { icon: "bi-person-check-fill", label: "Faculty Directory", color: "#ffa502" },
-    { icon: "bi-calendar-check-fill", label: "Course Schedule", color: "#ff6b35" }
+    {
+      icon: "bi-person-check-fill",
+      label: "Faculty Directory",
+      color: "#ffa502",
+    },
+    {
+      icon: "bi-calendar-check-fill",
+      label: "Course Schedule",
+      color: "#ff6b35",
+    },
   ];
 
   if (statsLoading || studentsLoading || facultyLoading || programsLoading) {
@@ -73,8 +90,17 @@ export default function Dashboard({ onLogout }) {
         <Sidebar />
         <div className="dashboard-content">
           <Navbar onLogout={onLogout} />
-          <div className="dashboard-main" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <p style={{ fontSize: '1.2rem', color: '#ff6b35' }}>Loading dashboard...</p>
+          <div
+            className="dashboard-main"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <p style={{ fontSize: "1.2rem", color: "#ff6b35" }}>
+              Loading dashboard...
+            </p>
           </div>
         </div>
       </div>
@@ -86,21 +112,24 @@ export default function Dashboard({ onLogout }) {
       <Sidebar />
 
       <div className="dashboard-content">
-        <Navbar onLogout={onLogout} />  
-       
+        <Navbar onLogout={onLogout} />
 
         <div className="dashboard-main">
           {/* Header Section */}
           <div className="dashboard-header">
             <h1>Welcome Back</h1>
-            <p>Track your institution's comprehensive student profiling system</p>
+            <p>
+              Track your institution's comprehensive student profiling system
+            </p>
           </div>
 
           {/* Stats Row */}
           <div className="stats-row">
             {dashboardStats.map((stat) => (
               <div key={stat.id} className="stat-card">
-                <div className={`stat-card-backdrop ${stat.backdropClass}`}></div>
+                <div
+                  className={`stat-card-backdrop ${stat.backdropClass}`}
+                ></div>
 
                 <div className="stat-card-content">
                   <div className="stat-card-header">
@@ -121,8 +150,8 @@ export default function Dashboard({ onLogout }) {
             <h4>Quick Actions</h4>
             <div className="quick-actions-grid">
               {actions.map((action, idx) => (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   className="action-btn"
                   style={{ borderColor: action.color }}
                   onMouseEnter={(e) => {
@@ -134,7 +163,10 @@ export default function Dashboard({ onLogout }) {
                     e.currentTarget.style.transform = "scale(1)";
                   }}
                 >
-                  <div className="action-btn-icon" style={{ color: action.color }}>
+                  <div
+                    className="action-btn-icon"
+                    style={{ color: action.color }}
+                  >
                     <i className={`bi ${action.icon}`}></i>
                   </div>
                   <p className="action-btn-label">{action.label}</p>
@@ -160,12 +192,22 @@ export default function Dashboard({ onLogout }) {
                 <tbody>
                   {students.slice(0, 5).map((student, idx) => (
                     <tr key={idx}>
-                      <td className="dept-cell-dept">{student.firstName} {student.lastName}</td>
-                      <td className="dept-cell-data">{student.studentId || 'N/A'}</td>
-                      <td className="dept-cell-data">{student.programName || 'N/A'}</td>
-                      <td className="dept-cell-data">{student.yearLevel || 'N/A'}</td>
+                      <td className="dept-cell-dept">
+                        {student.firstName} {student.lastName}
+                      </td>
+                      <td className="dept-cell-data">
+                        {student.studentId || "N/A"}
+                      </td>
+                      <td className="dept-cell-data">
+                        {student.programName || "N/A"}
+                      </td>
+                      <td className="dept-cell-data">
+                        {student.yearLevel || "N/A"}
+                      </td>
                       <td>
-                        <span className="status-badge">{student.status || 'Active'}</span>
+                        <span className="status-badge">
+                          {student.status || "Active"}
+                        </span>
                       </td>
                     </tr>
                   ))}
@@ -191,10 +233,18 @@ export default function Dashboard({ onLogout }) {
                 <tbody>
                   {faculty.slice(0, 5).map((fac, idx) => (
                     <tr key={idx}>
-                      <td className="dept-cell-dept">{fac.firstName} {fac.lastName}</td>
-                      <td className="dept-cell-data">{fac.position || 'N/A'}</td>
-                      <td className="dept-cell-data">{fac.employmentType || 'N/A'}</td>
-                      <td className="dept-cell-data">₱{fac.monthlyIncome || '0'}</td>
+                      <td className="dept-cell-dept">
+                        {fac.firstName} {fac.lastName}
+                      </td>
+                      <td className="dept-cell-data">
+                        {fac.position || "N/A"}
+                      </td>
+                      <td className="dept-cell-data">
+                        {fac.employmentType || "N/A"}
+                      </td>
+                      <td className="dept-cell-data">
+                        ₱{fac.monthlyIncome || "0"}
+                      </td>
                       <td>
                         <span className="status-badge">Active</span>
                       </td>
@@ -221,11 +271,23 @@ export default function Dashboard({ onLogout }) {
                 <tbody>
                   {programs.slice(0, 5).map((program, idx) => (
                     <tr key={idx}>
-                      <td className="dept-cell-dept">{program.name || 'N/A'}</td>
-                      <td className="dept-cell-data">{program.type || 'N/A'}</td>
-                      <td className="dept-cell-data">{program.dateEstablished ? new Date(program.dateEstablished).toLocaleDateString() : 'N/A'}</td>
+                      <td className="dept-cell-dept">
+                        {program.name || "N/A"}
+                      </td>
+                      <td className="dept-cell-data">
+                        {program.type || "N/A"}
+                      </td>
+                      <td className="dept-cell-data">
+                        {program.dateEstablished
+                          ? new Date(
+                              program.dateEstablished,
+                            ).toLocaleDateString()
+                          : "N/A"}
+                      </td>
                       <td>
-                        <span className="status-badge">{program.isActive ? 'Active' : 'Inactive'}</span>
+                        <span className="status-badge">
+                          {program.isActive ? "Active" : "Inactive"}
+                        </span>
                       </td>
                     </tr>
                   ))}
@@ -235,8 +297,7 @@ export default function Dashboard({ onLogout }) {
           </div>
         </div>
         <Footer />
-      </div> 
+      </div>
     </div>
-    
   );
 }

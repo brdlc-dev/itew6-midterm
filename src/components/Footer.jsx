@@ -1,8 +1,8 @@
-import React from 'react'
-import './componentStyles/Footer.css'
+import React from "react";
+import "./componentStyles/Footer.css";
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="footer">
@@ -16,7 +16,8 @@ const Footer = () => {
               <h3>CCS Profiling System</h3>
             </div>
             <p className="footer-description">
-              Comprehensive Student Profiling System for Educational Institutions
+              Comprehensive Student Profiling System for Educational
+              Institutions
             </p>
             <div className="footer-social">
               <a href="#" className="social-link" title="Facebook">
@@ -38,10 +39,18 @@ const Footer = () => {
           <div className="footer-section">
             <h4 className="footer-title">Quick Links</h4>
             <ul className="footer-links">
-              <li><a href="/">Dashboard</a></li>
-              <li><a href="/students">Students</a></li>
-              <li><a href="/faculty">Faculty</a></li>
-              <li><a href="#">Reports</a></li>
+              <li>
+                <a href="/">Dashboard</a>
+              </li>
+              <li>
+                <a href="/students">Students</a>
+              </li>
+              <li>
+                <a href="/faculty">Faculty</a>
+              </li>
+              <li>
+                <a href="#">Reports</a>
+              </li>
             </ul>
           </div>
 
@@ -49,10 +58,18 @@ const Footer = () => {
           <div className="footer-section">
             <h4 className="footer-title">Features</h4>
             <ul className="footer-links">
-              <li><a href="#">Student Management</a></li>
-              <li><a href="#">Faculty Directory</a></li>
-              <li><a href="#">Program Tracking</a></li>
-              <li><a href="#">Analytics</a></li>
+              <li>
+                <a href="#">Student Management</a>
+              </li>
+              <li>
+                <a href="#">Faculty Directory</a>
+              </li>
+              <li>
+                <a href="#">Program Tracking</a>
+              </li>
+              <li>
+                <a href="#">Analytics</a>
+              </li>
             </ul>
           </div>
 
@@ -60,10 +77,18 @@ const Footer = () => {
           <div className="footer-section">
             <h4 className="footer-title">Support</h4>
             <ul className="footer-links">
-              <li><a href="#">Help Center</a></li>
-              <li><a href="#">Documentation</a></li>
-              <li><a href="#">Contact Us</a></li>
-              <li><a href="#">FAQs</a></li>
+              <li>
+                <a href="#">Help Center</a>
+              </li>
+              <li>
+                <a href="#">Documentation</a>
+              </li>
+              <li>
+                <a href="#">Contact Us</a>
+              </li>
+              <li>
+                <a href="#">FAQs</a>
+              </li>
             </ul>
           </div>
 
@@ -71,10 +96,18 @@ const Footer = () => {
           <div className="footer-section">
             <h4 className="footer-title">Legal</h4>
             <ul className="footer-links">
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">Cookie Policy</a></li>
-              <li><a href="#">Accessibility</a></li>
+              <li>
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li>
+                <a href="#">Terms of Service</a>
+              </li>
+              <li>
+                <a href="#">Cookie Policy</a>
+              </li>
+              <li>
+                <a href="#">Accessibility</a>
+              </li>
             </ul>
           </div>
         </div>
@@ -105,17 +138,24 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="footer-bottom">
           <div className="footer-copyright">
-            <p>&copy; {currentYear} EduProfile. All rights reserved.</p>
+            <p>
+              &copy; {currentYear} CCS-COMPREHENSIVE PROFILING SYSTEM. All
+              rights reserved.
+            </p>
           </div>
           <div className="footer-contact">
-            <span><i className="bi bi-envelope"></i> support@eduprofile.com</span>
+            <span>
+              <i className="bi bi-envelope"></i> support@eduprofile.com
+            </span>
             <span className="divider">•</span>
-            <span><i className="bi bi-telephone"></i> +1 (555) 123-4567</span>
+            <span>
+              <i className="bi bi-telephone"></i> +1 (555) 123-4567
+            </span>
           </div>
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

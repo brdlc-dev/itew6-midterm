@@ -1,113 +1,113 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import './AuthPages.css/Register.css'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./AuthPages.css/Register.css";
 
 const Register = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    agreeTerms: false
-  })
-  const [errors, setErrors] = useState({})
-  const [successMessage, setSuccessMessage] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    agreeTerms: false,
+  });
+  const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }))
+      [name]: type === "checkbox" ? checked : value,
+    }));
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
-        [name]: ''
-      }))
+        [name]: "",
+      }));
     }
-  }
+  };
 
   const validateEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  }
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    const newErrors = {}
+    e.preventDefault();
+    const newErrors = {};
 
     if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required'
+      newErrors.firstName = "First name is required";
     }
 
     if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required'
+      newErrors.lastName = "Last name is required";
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
+      newErrors.email = "Email is required";
     } else if (!validateEmail(formData.email)) {
-      newErrors.email = 'Invalid email format'
+      newErrors.email = "Invalid email format";
     }
 
     if (!formData.password.trim()) {
-      newErrors.password = 'Password is required'
+      newErrors.password = "Password is required";
     } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters'
+      newErrors.password = "Password must be at least 6 characters";
     }
 
     if (!formData.confirmPassword.trim()) {
-      newErrors.confirmPassword = 'Please confirm your password'
+      newErrors.confirmPassword = "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match'
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     if (!formData.agreeTerms) {
-      newErrors.agreeTerms = 'You must agree to the terms'
+      newErrors.agreeTerms = "You must agree to the terms";
     }
 
     if (Object.keys(newErrors).length === 0) {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        
-        setSuccessMessage('✓ Registration successful! Redirecting to login...')
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        setSuccessMessage("✓ Registration successful! Redirecting to login...");
         setFormData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
-          agreeTerms: false
-        })
-        
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+          agreeTerms: false,
+        });
+
         setTimeout(() => {
-          navigate('/login')
-        }, 1500)
+          navigate("/login");
+        }, 1500);
       } catch (error) {
-        setErrors({ general: 'Registration failed. Please try again.' })
+        setErrors({ general: "Registration failed. Please try again." });
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     } else {
-      setErrors(newErrors)
+      setErrors(newErrors);
     }
-  }
+  };
 
   return (
     <div className="register-container">
       <div className="register-wrapper">
         {/* Left Section - Branding */}
-        <div className="register-branding">
+        <div className="login-branding">
           <div className="branding-content">
             <div className="branding-icon">
               <i className="bi bi-mortarboard-fill"></i>
             </div>
-            <h1>CCS</h1>
+            <h1>CCS - COMPREHENSIVE PROFILING SYSTEM</h1>
             <p>Comprehensive Student Profiling System</p>
-            
+
             <div className="branding-features">
               <div className="feature">
                 <i className="bi bi-check-circle-fill"></i>
@@ -133,9 +133,7 @@ const Register = () => {
         <div className="register-form-section">
           {/* Success Message */}
           {successMessage && (
-            <div className="success-message">
-              {successMessage}
-            </div>
+            <div className="success-message">{successMessage}</div>
           )}
 
           {/* Error Message */}
@@ -165,7 +163,7 @@ const Register = () => {
                     value={formData.firstName}
                     onChange={handleInputChange}
                     disabled={isLoading}
-                    className={errors.firstName ? 'input-error' : ''}
+                    className={errors.firstName ? "input-error" : ""}
                     autoComplete="given-name"
                   />
                 </div>
@@ -189,7 +187,7 @@ const Register = () => {
                     value={formData.lastName}
                     onChange={handleInputChange}
                     disabled={isLoading}
-                    className={errors.lastName ? 'input-error' : ''}
+                    className={errors.lastName ? "input-error" : ""}
                     autoComplete="family-name"
                   />
                 </div>
@@ -214,7 +212,7 @@ const Register = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   disabled={isLoading}
-                  className={errors.email ? 'input-error' : ''}
+                  className={errors.email ? "input-error" : ""}
                   autoComplete="email"
                 />
               </div>
@@ -239,7 +237,7 @@ const Register = () => {
                     value={formData.password}
                     onChange={handleInputChange}
                     disabled={isLoading}
-                    className={errors.password ? 'input-error' : ''}
+                    className={errors.password ? "input-error" : ""}
                     autoComplete="new-password"
                   />
                 </div>
@@ -263,7 +261,7 @@ const Register = () => {
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     disabled={isLoading}
-                    className={errors.confirmPassword ? 'input-error' : ''}
+                    className={errors.confirmPassword ? "input-error" : ""}
                     autoComplete="new-password"
                   />
                 </div>
@@ -293,11 +291,7 @@ const Register = () => {
               </span>
             )}
 
-            <button 
-              type="submit" 
-              className="submit-btn"
-              disabled={isLoading}
-            >
+            <button type="submit" className="submit-btn" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <span className="spinner"></span>
@@ -312,7 +306,7 @@ const Register = () => {
             </button>
 
             <p className="form-footer">
-              Already have an account?{' '}
+              Already have an account?{" "}
               <a href="/" className="link-btn">
                 Sign in here
               </a>
@@ -325,7 +319,7 @@ const Register = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;
