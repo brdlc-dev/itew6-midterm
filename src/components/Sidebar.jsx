@@ -7,7 +7,20 @@ export default function Sidebar() {
   const navItems = [
     { path: "/", label: "Dashboard", icon: "bi-speedometer2" },
     { path: "/students", label: "Students", icon: "bi-people-fill" },
-    { path: "/faculty", label: "Faculty", icon: "bi-person-badge-fill" }
+    { path: "/faculty", label: "Faculty", icon: "bi-person-badge-fill" },
+    {
+      path: "/academic-history",
+      label: "Academic History",
+      icon: "bi-journal-text",
+    },
+    { path: "/non-academic", label: "Non-Academic", icon: "bi-award-fill" },
+    {
+      path: "/violations",
+      label: "Violations",
+      icon: "bi-exclamation-triangle-fill",
+    },
+    { path: "/skills", label: "Skills", icon: "bi-lightbulb-fill" },
+    { path: "/affiliation", label: "Affiliation", icon: "bi-diagram-3-fill" },
   ];
 
   return (
@@ -24,7 +37,7 @@ export default function Sidebar() {
       <ul className="sidebar-nav">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
-          
+
           return (
             <li key={item.path} className="sidebar-nav-item">
               <Link

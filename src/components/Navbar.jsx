@@ -30,21 +30,6 @@ export default function Navbar({ onLogout }) {
 
         {/* Right Side */}
         <div className="navbar-right">
-          {/* Search Bar */}
-          <div className="navbar-search d-none d-md-flex">
-            <input type="text" placeholder="Search..." />
-          </div>
-
-          {/* Icon Buttons */}
-          <button className="navbar-icon-btn" title="Notifications">
-            <i className="bi bi-bell"></i>
-            <span className="navbar-notification-dot"></span>
-          </button>
-
-          <button className="navbar-icon-btn" title="Settings">
-            <i className="bi bi-gear"></i>
-          </button>
-
           {/* Divider */}
           <div className="navbar-divider"></div>
 
