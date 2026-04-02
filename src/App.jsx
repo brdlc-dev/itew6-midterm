@@ -12,6 +12,7 @@ import Register from "./AuthPages/Register";
 import DashboardPage from "./pages/Dashboard";
 import StudentPage from "./pages/StudentPage";
 import FacultyPage from "./pages/FacultyPage";
+import { AppDataProvider } from "./context/AppDataContext";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, isAuthenticated }) => {
@@ -62,74 +63,79 @@ export default function App() {
   };
 
   return (
-    <Router>
-      <Routes>
-        {/* Public Routes - Login is default */}
-        <Route
-          path="/"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <Login setIsAuthenticated={setIsAuthenticated} />
-            )
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <Login setIsAuthenticated={setIsAuthenticated} />
-            )
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <Register />
-            )
-          }
-        />
+    <AppDataProvider>
+      <Router>
+        <Routes>
+          {/* Public Routes - Login is default */}
+          <Route
+            path="/"
+            element={
+              isAuthenticated ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <Login setIsAuthenticated={setIsAuthenticated} />
+              )
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              isAuthenticated ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <Login setIsAuthenticated={setIsAuthenticated} />
+              )
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              isAuthenticated ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <Register />
+              )
+            }
+          />
 
-        {/* Protected Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <DashboardPage onLogout={handleLogout} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/students"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <StudentPage onLogout={handleLogout} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/faculty"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <FacultyPage onLogout={handleLogout} />
-            </ProtectedRoute>
-          }
-        />
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <DashboardPage onLogout={handleLogout} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/students"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <StudentPage onLogout={handleLogout} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/faculty"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <FacultyPage onLogout={handleLogout} />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Catch all - redirect to login or dashboard based on auth */}
-        <Route
-          path="*"
-          element={
-            <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />
-          }
-        />
-      </Routes>
-    </Router>
+          {/* Catch all - redirect to login or dashboard based on auth */}
+          <Route
+            path="*"
+            element={
+              <Navigate
+                to={isAuthenticated ? "/dashboard" : "/login"}
+                replace
+              />
+            }
+          />
+        </Routes>
+      </Router>
+    </AppDataProvider>
   );
 }

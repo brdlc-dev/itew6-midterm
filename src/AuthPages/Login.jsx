@@ -15,7 +15,6 @@ const Login = ({ setIsAuthenticated }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -42,11 +41,9 @@ const Login = ({ setIsAuthenticated }) => {
 
     setIsLoading(true);
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // --- FAKE login token for demo purposes ---
-      const role = formData.email.includes("admin") ? "admin" : "student"; // demo role based on email
+      const role = formData.email.includes("admin") ? "admin" : "student";
       const fakeToken = btoa(
         JSON.stringify({ email: formData.email, role, timestamp: Date.now() }),
       );
@@ -60,7 +57,6 @@ const Login = ({ setIsAuthenticated }) => {
 
       if (setIsAuthenticated) setIsAuthenticated(true);
 
-      // Redirect to dashboard
       setTimeout(() => {
         navigate("/dashboard");
       }, 1000);
@@ -74,6 +70,7 @@ const Login = ({ setIsAuthenticated }) => {
   return (
     <div className="login-container">
       <div className="login-wrapper">
+        {/* Left - Branding (matches Register) */}
         <div className="login-branding">
           <div className="branding-content">
             <div className="branding-icon">
@@ -81,15 +78,38 @@ const Login = ({ setIsAuthenticated }) => {
             </div>
             <h1>CCS - COMPREHENSIVE PROFILING SYSTEM</h1>
             <p>Comprehensive Student Profiling System</p>
+
+            <div className="branding-features">
+              <div className="feature">
+                <i className="bi bi-check-circle-fill"></i>
+                <span>Student Management</span>
+              </div>
+              <div className="feature">
+                <i className="bi bi-check-circle-fill"></i>
+                <span>Faculty Directory</span>
+              </div>
+              <div className="feature">
+                <i className="bi bi-check-circle-fill"></i>
+                <span>Program Tracking</span>
+              </div>
+              <div className="feature">
+                <i className="bi bi-check-circle-fill"></i>
+                <span>Performance Analytics</span>
+              </div>
+            </div>
           </div>
         </div>
 
+        {/* Right - Form */}
         <div className="login-form-section">
           {successMessage && (
             <div className="success-message">{successMessage}</div>
           )}
           {errors.general && (
-            <div className="error-banner">{errors.general}</div>
+            <div className="error-banner">
+              <i className="bi bi-exclamation-circle-fill"></i>
+              {errors.general}
+            </div>
           )}
 
           <form className="login-form" onSubmit={handleSubmit}>
@@ -99,41 +119,78 @@ const Login = ({ setIsAuthenticated }) => {
             </div>
 
             <div className="form-group">
-              <label>Email Address</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                disabled={isLoading}
-                className={errors.email ? "input-error" : ""}
-                placeholder="Enter your email"
-              />
+              <label htmlFor="email">Email Address</label>
+              <div className="form-input-wrapper">
+                <i className="bi bi-envelope-fill"></i>
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                  className={errors.email ? "input-error" : ""}
+                  placeholder="Enter your email"
+                  autoComplete="email"
+                />
+              </div>
               {errors.email && (
-                <span className="error-message">{errors.email}</span>
+                <span className="error-message">
+                  <i className="bi bi-exclamation-circle-fill"></i>
+                  {errors.email}
+                </span>
               )}
             </div>
 
             <div className="form-group">
-              <label>Password</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                disabled={isLoading}
-                className={errors.password ? "input-error" : ""}
-                placeholder="Enter your password"
-              />
+              <label htmlFor="password">Password</label>
+              <div className="form-input-wrapper">
+                <i className="bi bi-lock-fill"></i>
+                <input
+                  id="password"
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                  className={errors.password ? "input-error" : ""}
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                />
+              </div>
               {errors.password && (
-                <span className="error-message">{errors.password}</span>
+                <span className="error-message">
+                  <i className="bi bi-exclamation-circle-fill"></i>
+                  {errors.password}
+                </span>
               )}
             </div>
 
             <button type="submit" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? (
+                <>
+                  <span className="spinner"></span>
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-box-arrow-in-right"></i>
+                  Sign In
+                </>
+              )}
             </button>
+
+            <p className="form-footer">
+              Don't have an account?{" "}
+              <a href="/register" className="link-btn">
+                Register here
+              </a>
+            </p>
           </form>
+
+          <div className="login-footer">
+            <p>© 2024 CCS. All rights reserved.</p>
+          </div>
         </div>
       </div>
     </div>

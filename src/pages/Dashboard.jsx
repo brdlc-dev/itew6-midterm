@@ -1,90 +1,38 @@
+// src/pages/Dashboard.jsx
 import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import {
-  useDashboardStats,
-  useStudents,
-  useFaculty,
-  usePrograms,
-} from "../hooks/useDatabase";
+import { useAppData } from "../context/AppDataContext";
 import "../pages/pagesStyles/Dashboard.css";
 
 export default function Dashboard({ onLogout }) {
-  const { stats, loading: statsLoading } = useDashboardStats();
-  const { students, loading: studentsLoading } = useStudents();
-  const { faculty, loading: facultyLoading } = useFaculty();
-  const { programs, loading: programsLoading } = usePrograms();
+  const {
+    students,
+    studentsLoading,
+    faculty,
+    facultyLoading,
+    programs,
+    programsLoading,
+    stats,
+    statsLoading,
+  } = useAppData();
 
-  // Calculate additional metrics from database
-  const [metrics, setMetrics] = useState({
-    avgGPA: 0,
-    activeStudents: 0,
-    totalCourses: 0,
-  });
+  const [metrics, setMetrics] = useState({ avgGPA: 0, activeStudents: 0 });
 
   useEffect(() => {
-    if (students.length > 0) {
+    if (students && students.length > 0) {
       const avgGPA = (
         students.reduce((sum, s) => sum + (s.gpa || 0), 0) / students.length
       ).toFixed(2);
       const activeStudents = students.filter(
         (s) => s.status === "Active",
       ).length;
-      setMetrics({
-        avgGPA,
-        activeStudents,
-        totalCourses: stats.totalCourses,
-      });
+      setMetrics({ avgGPA, activeStudents });
     }
-  }, [students, stats]);
+  }, [students]);
 
-  const dashboardStats = [
-    {
-      id: 1,
-      label: "Total Students",
-      value: stats.totalStudents || "0",
-      icon: "bi-people-fill",
-      backdropClass: "stat-card-backdrop-orange-1",
-      iconClass: "stat-card-orange-1",
-      trend: `${metrics.activeStudents} active students`,
-    },
-    {
-      id: 2,
-      label: "Total Faculty",
-      value: stats.totalFaculty || "0",
-      icon: "bi-person-badge-fill",
-      backdropClass: "stat-card-backdrop-orange-2",
-      iconClass: "stat-card-orange-2",
-      trend: `${stats.totalPrograms} programs`,
-    },
-    {
-      id: 3,
-      label: "Total Programs",
-      value: stats.totalPrograms || "0",
-      icon: "bi-book-fill",
-      backdropClass: "stat-card-backdrop-orange-3",
-      iconClass: "stat-card-orange-3",
-      trend: `${stats.totalCourses} courses`,
-    },
-  ];
-
-  const actions = [
-    { icon: "bi-bar-chart-fill", label: "View Reports", color: "#ff8c42" },
-    { icon: "bi-people-fill", label: "Manage Students", color: "#ff9f43" },
-    {
-      icon: "bi-person-check-fill",
-      label: "Faculty Directory",
-      color: "#ffa502",
-    },
-    {
-      icon: "bi-calendar-check-fill",
-      label: "Course Schedule",
-      color: "#ff6b35",
-    },
-  ];
-
-  if (statsLoading || studentsLoading || facultyLoading || programsLoading) {
+  if (studentsLoading || facultyLoading || programsLoading || statsLoading) {
     return (
       <div className="dashboard-container">
         <Sidebar />
@@ -107,15 +55,42 @@ export default function Dashboard({ onLogout }) {
     );
   }
 
+  const dashboardStats = [
+    {
+      id: 1,
+      label: "Total Students",
+      value: students.length || 0,
+      icon: "bi-people-fill",
+      backdropClass: "stat-card-backdrop-orange-1",
+      iconClass: "stat-card-orange-1",
+      trend: `${metrics.activeStudents} active students`,
+    },
+    {
+      id: 2,
+      label: "Total Faculty",
+      value: faculty.length || 0,
+      icon: "bi-person-badge-fill",
+      backdropClass: "stat-card-backdrop-orange-2",
+      iconClass: "stat-card-orange-2",
+      trend: `${programs.length} programs`,
+    },
+    {
+      id: 3,
+      label: "Total Programs",
+      value: programs.length || 0,
+      icon: "bi-book-fill",
+      backdropClass: "stat-card-backdrop-orange-3",
+      iconClass: "stat-card-orange-3",
+      trend: `Avg GPA: ${metrics.avgGPA}`,
+    },
+  ];
+
   return (
     <div className="dashboard-container">
       <Sidebar />
-
       <div className="dashboard-content">
         <Navbar onLogout={onLogout} />
-
         <div className="dashboard-main">
-          {/* Header Section */}
           <div className="dashboard-header">
             <h1>Welcome Back</h1>
             <p>
@@ -130,7 +105,6 @@ export default function Dashboard({ onLogout }) {
                 <div
                   className={`stat-card-backdrop ${stat.backdropClass}`}
                 ></div>
-
                 <div className="stat-card-content">
                   <div className="stat-card-header">
                     <h6 className="stat-card-label">{stat.label}</h6>
@@ -145,39 +119,9 @@ export default function Dashboard({ onLogout }) {
             ))}
           </div>
 
-          {/* Quick Actions Section */}
-          <div className="quick-actions">
-            <h4>Quick Actions</h4>
-            <div className="quick-actions-grid">
-              {actions.map((action, idx) => (
-                <div
-                  key={idx}
-                  className="action-btn"
-                  style={{ borderColor: action.color }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = action.color;
-                    e.currentTarget.style.transform = "scale(1.05)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "transparent";
-                    e.currentTarget.style.transform = "scale(1)";
-                  }}
-                >
-                  <div
-                    className="action-btn-icon"
-                    style={{ color: action.color }}
-                  >
-                    <i className={`bi ${action.icon}`}></i>
-                  </div>
-                  <p className="action-btn-label">{action.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Students Overview Table */}
+          {/* Recent Students */}
           <div className="dept-overview">
-            <h4>Recent Students Enrolled</h4>
+            <h4>Recent Students Enrolled ({students.length})</h4>
             <div className="table-responsive">
               <table className="table table-hover dept-table">
                 <thead>
@@ -192,18 +136,12 @@ export default function Dashboard({ onLogout }) {
                 <tbody>
                   {students.slice(0, 5).map((student, idx) => (
                     <tr key={idx}>
-                      <td className="dept-cell-dept">
+                      <td>
                         {student.firstName} {student.lastName}
                       </td>
-                      <td className="dept-cell-data">
-                        {student.studentId || "N/A"}
-                      </td>
-                      <td className="dept-cell-data">
-                        {student.programName || "N/A"}
-                      </td>
-                      <td className="dept-cell-data">
-                        {student.yearLevel || "N/A"}
-                      </td>
+                      <td>{student.studentId || "N/A"}</td>
+                      <td>{student.programName || "N/A"}</td>
+                      <td>{student.yearLevel || "N/A"}</td>
                       <td>
                         <span className="status-badge">
                           {student.status || "Active"}
@@ -211,14 +149,28 @@ export default function Dashboard({ onLogout }) {
                       </td>
                     </tr>
                   ))}
+                  {students.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        style={{
+                          textAlign: "center",
+                          color: "#999",
+                          padding: "1rem",
+                        }}
+                      >
+                        No students found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
 
-          {/* Faculty Overview Table */}
+          {/* Faculty */}
           <div className="dept-overview" style={{ marginTop: "2rem" }}>
-            <h4>Faculty Members</h4>
+            <h4>Faculty Members ({faculty.length})</h4>
             <div className="table-responsive">
               <table className="table table-hover dept-table">
                 <thead>
@@ -233,18 +185,12 @@ export default function Dashboard({ onLogout }) {
                 <tbody>
                   {faculty.slice(0, 5).map((fac, idx) => (
                     <tr key={idx}>
-                      <td className="dept-cell-dept">
+                      <td>
                         {fac.firstName} {fac.lastName}
                       </td>
-                      <td className="dept-cell-data">
-                        {fac.position || "N/A"}
-                      </td>
-                      <td className="dept-cell-data">
-                        {fac.employmentType || "N/A"}
-                      </td>
-                      <td className="dept-cell-data">
-                        ₱{fac.monthlyIncome || "0"}
-                      </td>
+                      <td>{fac.position || "N/A"}</td>
+                      <td>{fac.employmentType || "N/A"}</td>
+                      <td>₱{fac.monthlyIncome?.toLocaleString() || "0"}</td>
                       <td>
                         <span className="status-badge">Active</span>
                       </td>
@@ -255,9 +201,9 @@ export default function Dashboard({ onLogout }) {
             </div>
           </div>
 
-          {/* Programs Overview */}
+          {/* Programs */}
           <div className="dept-overview" style={{ marginTop: "2rem" }}>
-            <h4>Academic Programs</h4>
+            <h4>Academic Programs ({programs.length})</h4>
             <div className="table-responsive">
               <table className="table table-hover dept-table">
                 <thead>
@@ -269,15 +215,11 @@ export default function Dashboard({ onLogout }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {programs.slice(0, 5).map((program, idx) => (
+                  {programs.map((program, idx) => (
                     <tr key={idx}>
-                      <td className="dept-cell-dept">
-                        {program.name || "N/A"}
-                      </td>
-                      <td className="dept-cell-data">
-                        {program.type || "N/A"}
-                      </td>
-                      <td className="dept-cell-data">
+                      <td>{program.name || "N/A"}</td>
+                      <td>{program.type || "N/A"}</td>
+                      <td>
                         {program.dateEstablished
                           ? new Date(
                               program.dateEstablished,

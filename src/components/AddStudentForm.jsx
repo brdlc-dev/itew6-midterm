@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { StudentService } from "../services/storageService";
+import { ProgramService } from "../services/storageService";
 import "../components/componentStyles/AddStudentForm.css";
 
 export default function AddStudentForm({
   onSuccess,
   onCancel,
   editingStudent,
+  addStudent,
+  updateStudent,
 }) {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -26,10 +28,18 @@ export default function AddStudentForm({
     status: "Active",
   });
 
+  const [programs, setPrograms] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
 
+  // Load real programs from storage
+  useEffect(() => {
+    const stored = ProgramService.getAll();
+    setPrograms(stored);
+  }, []);
+
+  // Populate form when editing — convert IDs to strings for <select>
   useEffect(() => {
     if (editingStudent) {
       setFormData({
@@ -42,8 +52,12 @@ export default function AddStudentForm({
         email: editingStudent.email || "",
         city: editingStudent.city || "",
         province: editingStudent.province || "",
-        programId: editingStudent.programId || "",
-        yearLevel: editingStudent.yearLevel || "",
+        programId: editingStudent.programId
+          ? String(editingStudent.programId)
+          : "",
+        yearLevel: editingStudent.yearLevel
+          ? String(editingStudent.yearLevel)
+          : "",
         unitsTaken: editingStudent.unitsTaken || "",
         unitsLeft: editingStudent.unitsLeft || "",
         dateEnrolled: editingStudent.dateEnrolled || "",
@@ -56,7 +70,6 @@ export default function AddStudentForm({
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear validation error for this field when user starts typing
     if (validationErrors[name]) {
       setValidationErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -82,7 +95,6 @@ export default function AddStudentForm({
     ) {
       errors.gpa = "GPA must be between 0 and 4";
     }
-
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -91,13 +103,18 @@ export default function AddStudentForm({
     e.preventDefault();
     setError("");
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
 
     try {
+      // parseInt so it matches p.id which is a number
+      const programId = parseInt(formData.programId) || null;
+
+      // Find the real program from storage
+      const selectedProgram = programs.find((p) => p.id === programId);
+      const programName = selectedProgram?.name || "N/A";
+
       const entityData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -111,7 +128,8 @@ export default function AddStudentForm({
       };
 
       const studentData = {
-        programId: parseInt(formData.programId) || 1,
+        programId: programId,
+        programName: programName,
         yearLevel: parseInt(formData.yearLevel) || 1,
         unitsTaken: parseInt(formData.unitsTaken) || 0,
         unitsLeft: parseInt(formData.unitsLeft) || 0,
@@ -122,17 +140,26 @@ export default function AddStudentForm({
       };
 
       if (editingStudent) {
-        StudentService.update(editingStudent.id, studentData, entityData);
+        updateStudent(editingStudent.id, studentData, entityData);
+
+        const updatedStudent = {
+          ...editingStudent,
+          ...entityData,
+          ...studentData,
+          programName: programName, // explicitly override
+        };
+
+        if (onSuccess) onSuccess(updatedStudent);
       } else {
         studentData.studentId = `CSC-${new Date().getFullYear()}-${String(
           Math.floor(Math.random() * 10000),
-        ).padStart(3, "0")}`;
-        StudentService.create(studentData, entityData);
-      }
+        ).padStart(4, "0")}`;
 
-      if (onSuccess) onSuccess();
+        const result = addStudent(studentData, entityData);
+        if (onSuccess) onSuccess(result);
+      }
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -143,7 +170,6 @@ export default function AddStudentForm({
   return (
     <div className="add-student-form-wrapper">
       <form onSubmit={handleSubmit} className="add-student-form">
-        {/* Header */}
         <div className="form-header">
           <div className="form-title-section">
             <h2 className="form-title">
@@ -157,7 +183,6 @@ export default function AddStudentForm({
           </div>
         </div>
 
-        {/* Error Message */}
         {error && (
           <div className="error-banner">
             <svg
@@ -180,8 +205,7 @@ export default function AddStudentForm({
           </div>
         )}
 
-        {/* Form Sections */}
-        {/* Personal Information Section */}
+        {/* Personal Information */}
         <div className="form-section">
           <div className="section-header">
             <h3 className="section-title">Personal Information</h3>
@@ -189,13 +213,10 @@ export default function AddStudentForm({
               Basic details about the student
             </p>
           </div>
-
           <div className="form-grid form-grid-2">
-            {/* First Name */}
             <div className="form-group">
               <label className="form-label">
-                First Name
-                <span className="required">*</span>
+                First Name <span className="required">*</span>
               </label>
               <input
                 type="text"
@@ -209,12 +230,9 @@ export default function AddStudentForm({
                 <span className="error-text">{validationErrors.firstName}</span>
               )}
             </div>
-
-            {/* Last Name */}
             <div className="form-group">
               <label className="form-label">
-                Last Name
-                <span className="required">*</span>
+                Last Name <span className="required">*</span>
               </label>
               <input
                 type="text"
@@ -228,8 +246,6 @@ export default function AddStudentForm({
                 <span className="error-text">{validationErrors.lastName}</span>
               )}
             </div>
-
-            {/* Middle Name */}
             <div className="form-group">
               <label className="form-label">Middle Name</label>
               <input
@@ -241,12 +257,9 @@ export default function AddStudentForm({
                 className="form-input"
               />
             </div>
-
-            {/* Email */}
             <div className="form-group">
               <label className="form-label">
-                Email
-                <span className="required">*</span>
+                Email <span className="required">*</span>
               </label>
               <input
                 type="email"
@@ -260,8 +273,6 @@ export default function AddStudentForm({
                 <span className="error-text">{validationErrors.email}</span>
               )}
             </div>
-
-            {/* Age */}
             <div className="form-group">
               <label className="form-label">Age</label>
               <input
@@ -278,8 +289,6 @@ export default function AddStudentForm({
                 <span className="error-text">{validationErrors.age}</span>
               )}
             </div>
-
-            {/* Mobile Number */}
             <div className="form-group">
               <label className="form-label">Mobile Number</label>
               <input
@@ -291,8 +300,6 @@ export default function AddStudentForm({
                 className="form-input"
               />
             </div>
-
-            {/* Birth Province */}
             <div className="form-group">
               <label className="form-label">Birth Province</label>
               <input
@@ -307,15 +314,13 @@ export default function AddStudentForm({
           </div>
         </div>
 
-        {/* Address Section */}
+        {/* Address Information */}
         <div className="form-section">
           <div className="section-header">
             <h3 className="section-title">Address Information</h3>
             <p className="section-description">Current residential location</p>
           </div>
-
           <div className="form-grid form-grid-2">
-            {/* City */}
             <div className="form-group">
               <label className="form-label">City</label>
               <input
@@ -327,8 +332,6 @@ export default function AddStudentForm({
                 className="form-input"
               />
             </div>
-
-            {/* Province */}
             <div className="form-group">
               <label className="form-label">Province</label>
               <input
@@ -343,7 +346,7 @@ export default function AddStudentForm({
           </div>
         </div>
 
-        {/* Academic Information Section */}
+        {/* Academic Information */}
         <div className="form-section">
           <div className="section-header">
             <h3 className="section-title">Academic Information</h3>
@@ -351,31 +354,28 @@ export default function AddStudentForm({
               Student enrollment and academic details
             </p>
           </div>
-
           <div className="form-grid form-grid-3">
-            {/* Program ID */}
             <div className="form-group">
               <label className="form-label">Program</label>
               <select
                 name="programId"
-                value={formData.programId}
+                value={String(formData.programId)}
                 onChange={handleChange}
                 className="form-input form-select"
               >
                 <option value="">Select program</option>
-                <option value="1">Computer Science</option>
-                <option value="2">Information Technology</option>
-                <option value="3">Engineering</option>
-                <option value="4">Business Administration</option>
+                {programs.map((p) => (
+                  <option key={p.id} value={String(p.id)}>
+                    {p.name}
+                  </option>
+                ))}
               </select>
             </div>
-
-            {/* Year Level */}
             <div className="form-group">
               <label className="form-label">Year Level</label>
               <select
                 name="yearLevel"
-                value={formData.yearLevel}
+                value={String(formData.yearLevel)}
                 onChange={handleChange}
                 className="form-input form-select"
               >
@@ -386,8 +386,6 @@ export default function AddStudentForm({
                 <option value="4">4th Year</option>
               </select>
             </div>
-
-            {/* GPA */}
             <div className="form-group">
               <label className="form-label">GPA</label>
               <input
@@ -405,8 +403,6 @@ export default function AddStudentForm({
                 <span className="error-text">{validationErrors.gpa}</span>
               )}
             </div>
-
-            {/* Units Taken */}
             <div className="form-group">
               <label className="form-label">Units Taken</label>
               <input
@@ -418,8 +414,6 @@ export default function AddStudentForm({
                 className="form-input"
               />
             </div>
-
-            {/* Units Left */}
             <div className="form-group">
               <label className="form-label">Units Left</label>
               <input
@@ -431,8 +425,6 @@ export default function AddStudentForm({
                 className="form-input"
               />
             </div>
-
-            {/* Date Enrolled */}
             <div className="form-group">
               <label className="form-label">Date Enrolled</label>
               <input
@@ -446,13 +438,12 @@ export default function AddStudentForm({
           </div>
         </div>
 
-        {/* Status Section */}
+        {/* Status */}
         <div className="form-section">
           <div className="section-header">
             <h3 className="section-title">Status</h3>
             <p className="section-description">Current enrollment status</p>
           </div>
-
           <div className="form-group">
             <label className="form-label">Status</label>
             <div className="status-options">
@@ -473,7 +464,6 @@ export default function AddStudentForm({
           </div>
         </div>
 
-        {/* Form Actions */}
         <div className="form-actions">
           <button
             type="button"

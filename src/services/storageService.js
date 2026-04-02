@@ -197,6 +197,7 @@ export const ScheduleService = {
 // =====================================================
 
 export const StudentService = {
+  // Dynamically joins student + entity + program on every read
   getAll: () => {
     const students = getAll(STORAGE_KEYS.STUDENT);
     const entities = getAll(STORAGE_KEYS.ENTITY);
@@ -209,6 +210,7 @@ export const StudentService = {
         ...student,
         firstName: entity?.firstName || "N/A",
         lastName: entity?.lastName || "N/A",
+        middleName: entity?.middleName || "",
         email: entity?.email || "N/A",
         mobileNumber: entity?.mobileNumber || "N/A",
         birthDate: entity?.birthDate || "N/A",
@@ -216,10 +218,12 @@ export const StudentService = {
         birthProvince: entity?.birthProvince || "N/A",
         city: entity?.city || "N/A",
         province: entity?.province || "N/A",
+        // ✅ Always resolved from the real program record
         programName: program?.name || "N/A",
       };
     });
   },
+
   getById: (id) => {
     const student = getById(STORAGE_KEYS.STUDENT, id);
     if (!student) return null;
@@ -230,6 +234,7 @@ export const StudentService = {
         ...student,
         firstName: entity?.firstName || "N/A",
         lastName: entity?.lastName || "N/A",
+        middleName: entity?.middleName || "",
         email: entity?.email || "N/A",
         mobileNumber: entity?.mobileNumber || "N/A",
         birthDate: entity?.birthDate || "N/A",
@@ -243,20 +248,31 @@ export const StudentService = {
       program,
     };
   },
+
   create: (studentData, entityData) => {
     const entity = EntityService.create(entityData);
     const student = create(STORAGE_KEYS.STUDENT, {
       ...studentData,
       entityId: entity.id,
     });
-    return { student, entity };
+    // Return flat merged object so the hook can immediately use it
+    const programs = getAll(STORAGE_KEYS.PROGRAM);
+    const program = programs.find((p) => p.id === student.programId);
+    return {
+      ...student,
+      ...entityData,
+      programName: program?.name || "N/A",
+    };
   },
+
   update: (id, studentData, entityData) => {
     const student = getById(STORAGE_KEYS.STUDENT, id);
     if (!student) return null;
+    // ✅ Update both entity and student records
     EntityService.update(student.entityId, entityData);
     return update(STORAGE_KEYS.STUDENT, id, studentData);
   },
+
   delete: (id) => {
     const student = getById(STORAGE_KEYS.STUDENT, id);
     if (student) {
@@ -471,10 +487,10 @@ export const DashboardService = {
 // =====================================================
 
 export const initializeSampleData = () => {
-  // Check if data already exists
+  // Clear and re-seed only if no college exists yet
   if (getAll(STORAGE_KEYS.COLLEGE).length > 0) return;
 
-  // College
+  // ── College ───────────────────────────────────────
   const college = create(STORAGE_KEYS.COLLEGE, {
     name: "College of Computing Sciences",
     dean: "Dr. Maria Santos",
@@ -482,7 +498,7 @@ export const initializeSampleData = () => {
     isActive: true,
   });
 
-  // Programs
+  // ── Programs ──────────────────────────────────────
   const program1 = create(STORAGE_KEYS.PROGRAM, {
     collegeId: college.id,
     name: "BS Computer Science",
@@ -499,73 +515,293 @@ export const initializeSampleData = () => {
     isActive: true,
   });
 
-  // Sample Students
-  const entity1 = create(STORAGE_KEYS.ENTITY, {
-    firstName: "John",
-    lastName: "Doe",
-    middleName: "Michael",
-    age: 20,
-    birthDate: "2003-05-15",
-    city: "Dasmarinas",
-    province: "Cavite",
-    mobileNumber: "09123456789",
-    email: "john.doe@ccs.edu",
+  const program3 = create(STORAGE_KEYS.PROGRAM, {
+    collegeId: college.id,
+    name: "BS Business Administration",
+    type: "Bachelor's Degree",
+    dateEstablished: "2013-06-01",
+    isActive: true,
   });
 
-  create(STORAGE_KEYS.STUDENT, {
-    entityId: entity1.id,
-    studentId: "CSC-2024-001",
-    programId: program1.id,
-    yearLevel: 3,
-    unitsTaken: 45,
-    unitsLeft: 15,
-    dateEnrolled: "2022-06-01",
-    gpa: 3.85,
-    status: "Active",
+  const program4 = create(STORAGE_KEYS.PROGRAM, {
+    collegeId: college.id,
+    name: "BS Information Systems",
+    type: "Bachelor's Degree",
+    dateEstablished: "2014-06-01",
+    isActive: true,
   });
 
-  const entity2 = create(STORAGE_KEYS.ENTITY, {
-    firstName: "Jane",
-    lastName: "Smith",
-    middleName: "Anne",
-    age: 19,
-    birthDate: "2004-08-20",
-    city: "Binan",
-    province: "Laguna",
-    mobileNumber: "09234567890",
-    email: "jane.smith@ccs.edu",
+  // ── 8 Sample Students ─────────────────────────────
+  const studentsData = [
+    {
+      entity: {
+        firstName: "John",
+        lastName: "Doe",
+        middleName: "Michael",
+        age: 20,
+        birthDate: "2003-05-15",
+        birthProvince: "Cavite",
+        city: "Dasmarinas",
+        province: "Cavite",
+        mobileNumber: "09123456789",
+        email: "john.doe@ccs.edu",
+      },
+      student: {
+        studentId: "CSC-2024-001",
+        programId: program1.id,
+        yearLevel: 3,
+        unitsTaken: 45,
+        unitsLeft: 15,
+        dateEnrolled: "2022-06-01",
+        gpa: 3.85,
+        status: "Active",
+      },
+    },
+    {
+      entity: {
+        firstName: "Jane",
+        lastName: "Smith",
+        middleName: "Anne",
+        age: 19,
+        birthDate: "2004-08-20",
+        birthProvince: "Laguna",
+        city: "Binan",
+        province: "Laguna",
+        mobileNumber: "09234567890",
+        email: "jane.smith@ccs.edu",
+      },
+      student: {
+        studentId: "CSC-2024-002",
+        programId: program2.id,
+        yearLevel: 2,
+        unitsTaken: 30,
+        unitsLeft: 30,
+        dateEnrolled: "2023-06-01",
+        gpa: 3.92,
+        status: "Active",
+      },
+    },
+    {
+      entity: {
+        firstName: "Carlos",
+        lastName: "Reyes",
+        middleName: "Bautista",
+        age: 21,
+        birthDate: "2002-03-10",
+        birthProvince: "Batangas",
+        city: "Lipa",
+        province: "Batangas",
+        mobileNumber: "09312345678",
+        email: "carlos.reyes@ccs.edu",
+      },
+      student: {
+        studentId: "CSC-2024-003",
+        programId: program1.id,
+        yearLevel: 4,
+        unitsTaken: 60,
+        unitsLeft: 0,
+        dateEnrolled: "2021-06-01",
+        gpa: 3.5,
+        status: "Graduated",
+      },
+    },
+    {
+      entity: {
+        firstName: "Maria",
+        lastName: "Santos",
+        middleName: "Cruz",
+        age: 20,
+        birthDate: "2003-11-25",
+        birthProvince: "Rizal",
+        city: "Antipolo",
+        province: "Rizal",
+        mobileNumber: "09423456789",
+        email: "maria.santos@ccs.edu",
+      },
+      student: {
+        studentId: "CSC-2024-004",
+        programId: program3.id,
+        yearLevel: 2,
+        unitsTaken: 28,
+        unitsLeft: 32,
+        dateEnrolled: "2023-06-01",
+        gpa: 2.75,
+        status: "Active",
+      },
+    },
+    {
+      entity: {
+        firstName: "Luis",
+        lastName: "Garcia",
+        middleName: "Dela Cruz",
+        age: 22,
+        birthDate: "2001-07-04",
+        birthProvince: "Quezon",
+        city: "Lucena",
+        province: "Quezon",
+        mobileNumber: "09534567890",
+        email: "luis.garcia@ccs.edu",
+      },
+      student: {
+        studentId: "CSC-2024-005",
+        programId: program4.id,
+        yearLevel: 3,
+        unitsTaken: 48,
+        unitsLeft: 12,
+        dateEnrolled: "2022-06-01",
+        gpa: 3.1,
+        status: "Active",
+      },
+    },
+    {
+      entity: {
+        firstName: "Ana",
+        lastName: "Villanueva",
+        middleName: "Lopez",
+        age: 18,
+        birthDate: "2005-01-30",
+        birthProvince: "Bulacan",
+        city: "Malolos",
+        province: "Bulacan",
+        mobileNumber: "09645678901",
+        email: "ana.villanueva@ccs.edu",
+      },
+      student: {
+        studentId: "CSC-2024-006",
+        programId: program2.id,
+        yearLevel: 1,
+        unitsTaken: 10,
+        unitsLeft: 50,
+        dateEnrolled: "2024-06-01",
+        gpa: 3.67,
+        status: "Active",
+      },
+    },
+    {
+      entity: {
+        firstName: "Marco",
+        lastName: "Fernandez",
+        middleName: "Tan",
+        age: 23,
+        birthDate: "2000-09-15",
+        birthProvince: "Pampanga",
+        city: "Angeles",
+        province: "Pampanga",
+        mobileNumber: "09756789012",
+        email: "marco.fernandez@ccs.edu",
+      },
+      student: {
+        studentId: "CSC-2024-007",
+        programId: program1.id,
+        yearLevel: 4,
+        unitsTaken: 55,
+        unitsLeft: 5,
+        dateEnrolled: "2021-06-01",
+        gpa: 2.4,
+        status: "Suspended",
+      },
+    },
+    {
+      entity: {
+        firstName: "Sofia",
+        lastName: "Mendoza",
+        middleName: "Rivera",
+        age: 19,
+        birthDate: "2004-04-22",
+        birthProvince: "Cebu",
+        city: "Cebu City",
+        province: "Cebu",
+        mobileNumber: "09867890123",
+        email: "sofia.mendoza@ccs.edu",
+      },
+      student: {
+        studentId: "CSC-2024-008",
+        programId: program3.id,
+        yearLevel: 2,
+        unitsTaken: 25,
+        unitsLeft: 35,
+        dateEnrolled: "2023-06-01",
+        gpa: 3.3,
+        status: "Dropped",
+      },
+    },
+  ];
+
+  // Create all students
+  studentsData.forEach(({ entity, student }) => {
+    const createdEntity = create(STORAGE_KEYS.ENTITY, entity);
+    create(STORAGE_KEYS.STUDENT, {
+      ...student,
+      entityId: createdEntity.id,
+    });
   });
 
-  create(STORAGE_KEYS.STUDENT, {
-    entityId: entity2.id,
-    studentId: "CSC-2024-002",
-    programId: program2.id,
-    yearLevel: 2,
-    unitsTaken: 30,
-    unitsLeft: 30,
-    dateEnrolled: "2023-06-01",
-    gpa: 3.92,
-    status: "Active",
-  });
+  // ── Sample Faculty ────────────────────────────────
+  const facultyData = [
+    {
+      entity: {
+        firstName: "Ricardo",
+        lastName: "Rodriguez",
+        age: 45,
+        birthDate: "1978-12-10",
+        city: "Kawit",
+        province: "Cavite",
+        mobileNumber: "09111111111",
+        email: "dr.rodriguez@ccs.edu",
+      },
+      faculty: {
+        position: "Professor",
+        employmentDate: "2015-08-01",
+        employmentType: "Full-time",
+        monthlyIncome: 65000,
+        department: "Computer Science",
+      },
+    },
+    {
+      entity: {
+        firstName: "Elena",
+        lastName: "Aquino",
+        age: 38,
+        birthDate: "1985-06-20",
+        city: "Imus",
+        province: "Cavite",
+        mobileNumber: "09222222222",
+        email: "elena.aquino@ccs.edu",
+      },
+      faculty: {
+        position: "Associate Professor",
+        employmentDate: "2018-08-01",
+        employmentType: "Full-time",
+        monthlyIncome: 52000,
+        department: "Information Technology",
+      },
+    },
+    {
+      entity: {
+        firstName: "Bernard",
+        lastName: "Ocampo",
+        age: 50,
+        birthDate: "1973-02-14",
+        city: "Bacoor",
+        province: "Cavite",
+        mobileNumber: "09333333333",
+        email: "bernard.ocampo@ccs.edu",
+      },
+      faculty: {
+        position: "Department Head",
+        employmentDate: "2010-08-01",
+        employmentType: "Full-time",
+        monthlyIncome: 80000,
+        department: "Computer Science",
+      },
+    },
+  ];
 
-  // Sample Faculty
-  const entity3 = create(STORAGE_KEYS.ENTITY, {
-    firstName: "Dr.",
-    lastName: "Rodriguez",
-    age: 45,
-    birthDate: "1978-12-10",
-    city: "Kawit",
-    province: "Cavite",
-    mobileNumber: "09111111111",
-    email: "dr.rodriguez@ccs.edu",
-  });
-
-  create(STORAGE_KEYS.FACULTY, {
-    entityId: entity3.id,
-    position: "Professor",
-    employmentDate: "2015-08-01",
-    employmentType: "Full-time",
-    monthlyIncome: 65000,
-    department: "Computer Science",
+  facultyData.forEach(({ entity, faculty }) => {
+    const createdEntity = create(STORAGE_KEYS.ENTITY, entity);
+    create(STORAGE_KEYS.FACULTY, {
+      ...faculty,
+      entityId: createdEntity.id,
+    });
   });
 };
