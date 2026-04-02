@@ -1,5 +1,6 @@
 // src/pages/Dashboard.jsx
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -7,6 +8,8 @@ import { useAppData } from "../context/AppDataContext";
 import "../pages/pagesStyles/Dashboard.css";
 
 export default function Dashboard({ onLogout }) {
+  const navigate = useNavigate();
+
   const {
     students,
     studentsLoading,
@@ -25,9 +28,11 @@ export default function Dashboard({ onLogout }) {
       const avgGPA = (
         students.reduce((sum, s) => sum + (s.gpa || 0), 0) / students.length
       ).toFixed(2);
+
       const activeStudents = students.filter(
-        (s) => s.status === "Active",
+        (s) => s.status === "Active"
       ).length;
+
       setMetrics({ avgGPA, activeStudents });
     }
   }, [students]);
@@ -64,6 +69,7 @@ export default function Dashboard({ onLogout }) {
       backdropClass: "stat-card-backdrop-orange-1",
       iconClass: "stat-card-orange-1",
       trend: `${metrics.activeStudents} active students`,
+      route: "/students",
     },
     {
       id: 2,
@@ -73,6 +79,7 @@ export default function Dashboard({ onLogout }) {
       backdropClass: "stat-card-backdrop-orange-2",
       iconClass: "stat-card-orange-2",
       trend: `${programs.length} programs`,
+      route: "/faculty",
     },
     {
       id: 3,
@@ -82,6 +89,7 @@ export default function Dashboard({ onLogout }) {
       backdropClass: "stat-card-backdrop-orange-3",
       iconClass: "stat-card-orange-3",
       trend: `Avg GPA: ${metrics.avgGPA}`,
+      route: "/academic-history",
     },
   ];
 
@@ -94,14 +102,20 @@ export default function Dashboard({ onLogout }) {
           <div className="dashboard-header">
             <h1>Welcome Back</h1>
             <p>
-              Track your institution's comprehensive student profiling system
+              Track your institution&apos;s comprehensive student profiling
+              system
             </p>
           </div>
 
           {/* Stats Row */}
           <div className="stats-row">
             {dashboardStats.map((stat) => (
-              <div key={stat.id} className="stat-card">
+              <div
+                key={stat.id}
+                className="stat-card"
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate(stat.route)}
+              >
                 <div
                   className={`stat-card-backdrop ${stat.backdropClass}`}
                 ></div>
@@ -221,9 +235,7 @@ export default function Dashboard({ onLogout }) {
                       <td>{program.type || "N/A"}</td>
                       <td>
                         {program.dateEstablished
-                          ? new Date(
-                              program.dateEstablished,
-                            ).toLocaleDateString()
+                          ? new Date(program.dateEstablished).toLocaleDateString()
                           : "N/A"}
                       </td>
                       <td>
