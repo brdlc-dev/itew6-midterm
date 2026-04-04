@@ -43,9 +43,41 @@ const Login = ({ setIsAuthenticated }) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
+      // Get registered users from localStorage
+      const registeredUsers = JSON.parse(
+        localStorage.getItem("registeredUsers") || "[]",
+      );
+
+      // Check if email exists in registered users (case-insensitive)
+      const user = registeredUsers.find(
+        (u) => u.email.toLowerCase() === formData.email.toLowerCase(),
+      );
+
+      if (!user) {
+        setErrors({
+          general: "Email not registered. Please register an account first.",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Check if password matches
+      if (user.password !== formData.password) {
+        setErrors({
+          general: "Incorrect password. Please try again.",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Successful login
       const role = formData.email.includes("admin") ? "admin" : "student";
       const fakeToken = btoa(
-        JSON.stringify({ email: formData.email, role, timestamp: Date.now() }),
+        JSON.stringify({
+          email: formData.email,
+          role,
+          timestamp: Date.now(),
+        }),
       );
 
       localStorage.setItem("authToken", fakeToken);

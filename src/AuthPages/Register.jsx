@@ -50,6 +50,18 @@ const Register = () => {
       newErrors.email = "Email is required";
     } else if (!validateEmail(formData.email)) {
       newErrors.email = "Invalid email format";
+    } else {
+      // Check if email already registered
+      const registeredUsers = JSON.parse(
+        localStorage.getItem("registeredUsers") || "[]",
+      );
+      const emailExists = registeredUsers.some(
+        (u) => u.email.toLowerCase() === formData.email.toLowerCase(),
+      );
+      if (emailExists) {
+        newErrors.email =
+          "Email already registered. Please use a different email.";
+      }
     }
 
     if (!formData.password.trim()) {
@@ -72,6 +84,28 @@ const Register = () => {
       setIsLoading(true);
       try {
         await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        // Get existing registered users
+        const registeredUsers = JSON.parse(
+          localStorage.getItem("registeredUsers") || "[]",
+        );
+
+        // Add new user
+        const newUser = {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+          registeredAt: new Date().toISOString(),
+        };
+
+        registeredUsers.push(newUser);
+
+        // Save updated users list to localStorage
+        localStorage.setItem(
+          "registeredUsers",
+          JSON.stringify(registeredUsers),
+        );
 
         setSuccessMessage("✓ Registration successful! Redirecting to login...");
         setFormData({
